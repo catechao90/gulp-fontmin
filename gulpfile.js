@@ -1,10 +1,26 @@
 var gulp = require('gulp');
 var clean = require('gulp-clean');
 var fontmin = require('gulp-fontmin');
-var fs = require("fs");
+var fs = require('fs');
+var otfToTtf = require('gulp-otf2ttf');
+
 
 gulp.task('clean', function () {
     return gulp.src('build/', {
+            read: false
+        })
+        .pipe(clean());
+});
+
+gulp.task('clean-font', function () {
+    return gulp.src('build/font', {
+            read: false
+        })
+        .pipe(clean());
+});
+
+gulp.task('clean-otf', function () {
+    return gulp.src('build/font/*.otf', {
             read: false
         })
         .pipe(clean());
@@ -24,8 +40,15 @@ function minifyFont(text, cb) {
         .pipe(gulp.dest('build/font/'))
         .on('end', cb);
 }
+
+gulp.task('otf2ttf', function(cb) {
+    return gulp
+        .src('src/font/*.otf')
+        .pipe(otfToTtf())
  
-gulp.task('fonts', function(cb) {
+});
+ 
+gulp.task('fonts',['otf2ttf'], function(cb) {
  
     var buffers = [];
  
@@ -41,8 +64,8 @@ gulp.task('fonts', function(cb) {
  
 });
 
-gulp.task('build', ['copy'], function () {
-    gulp.start(['fonts']);
+gulp.task('build', ['copy',"clean-font"], function () {
+    gulp.start(['fonts', 'clean-otf']);
 });
 
 gulp.task('default', ['build']);
