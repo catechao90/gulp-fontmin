@@ -48,7 +48,7 @@ gulp.task('otf2ttf', function(cb) {
  
 });
  
-gulp.task('fonts',['otf2ttf'], function(cb) {
+gulp.task('fonts', function(cb) {
  
     var buffers = [];
  
