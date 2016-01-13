@@ -1,7 +1,11 @@
 var gulp = require('gulp');
 var clean = require('gulp-clean');
-var fontmin = require('gulp-fontmin');
+var Fontmin = require('fontmin');
 var fs = require("fs");
+
+var srcPath = 'src/font/*.ttf'; // 字体源文件
+var destPath = 'build/font'; 
+
 
 gulp.task('clean', function () {
     return gulp.src('build/', {
@@ -16,13 +20,23 @@ gulp.task('copy', ['clean'], function () {
 });
 
 function minifyFont(text, cb) {
-    gulp
-        .src('src/font/*.ttf')
-        .pipe(fontmin({
-            text: text
+    var fontmin = new Fontmin()
+        .src(srcPath)               
+        .use(Fontmin.glyph({        
+            text: text              
         }))
-        .pipe(gulp.dest('build/font/'))
-        .on('end', cb);
+        .use(Fontmin.ttf2eot())     
+        .use(Fontmin.ttf2woff())    
+        .use(Fontmin.ttf2svg())    
+        .dest(destPath); 
+    
+    fontmin.run(function (err, files, stream) {
+        if (err) {                  
+            console.error(err);
+        }
+        console.log('done');
+        cb();        
+    });
 }
  
 gulp.task('fonts', function(cb) {
